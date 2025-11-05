@@ -38,9 +38,35 @@ public class TodoListManager {
 				TodoItem item = todoItems.get(i);
 				System.out.println(item);
 
-
 			}
 			System.out.println("-------------------------");
 		}
+	}
+
+	//ユーザーが指定した番号（インデックス）の ToDo項目を「完了」にする
+	public void completeItem(int index) {
+
+		//受け取った index がリストの有効な範囲内にあるかチェック
+		if(
+			index < 1 ||
+			index > todoItems.size()
+		){
+			//無効な場合メソッドを終了
+			System.out.println("エラー: 指定された番号は無効です。");
+	        return;
+		}else {
+
+			//index を使ってリストから TodoItem オブジェクトを取得
+			int zeroBasedIndex = index - 1;
+			TodoItem itemToComplete = todoItems.get(zeroBasedIndex);
+
+			//取得したオブジェクトの setCompleted(true) メソッドを呼び出し
+			itemToComplete.setCompleted(true);
+		}
+
+	    // 2. index を使ってリストから TodoItem オブジェクトを取得します。（Listのgetメソッド）
+
+	    // 3. 取得したオブジェクトの setCompleted(true) メソッドを呼び出します。
+
 	}
 }
