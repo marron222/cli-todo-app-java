@@ -40,4 +40,11 @@ public class TodoItem {
 	public void setCompleted(boolean isCompleted) {
 		this.isCompleted = isCompleted;
 	}
+
+	//リスト表示用のtoStringメソッド
+	@Override
+	public String toString() {
+		String status = isCompleted ? "[DONE]":"[TODO]";
+		return status + "｜期限：" + deadline + "｜内容：" + content;
+	}
 }
