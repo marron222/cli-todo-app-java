@@ -1,0 +1,9 @@
+# Java/IDEのビルド出力フォルダや設定ファイルを無視
+*.class
+/bin/
+/out/
+.metadata
+.classpath
+.project
+*.iml
+.settings/
