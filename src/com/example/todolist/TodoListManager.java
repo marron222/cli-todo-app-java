@@ -1,3 +1,7 @@
+/**
+ * ToDoリストの項目（TodoItem）全体を管理するクラスです。
+ * 項目の追加、表示、完了、編集、リストの取得といった中核的なロジックを提供します。
+ */
 package com.example.todolist;
 
 import java.time.LocalDate;
@@ -7,14 +11,20 @@ import java.util.List;
 public class TodoListManager {
 
 	//フィールド
+	/** ToDoItemオブジェクトを保持するリスト */
 	private List<TodoItem> todoItems = new ArrayList <>();
 
-	// TodoItemを受け取り、リストに追加する
+	/**
+	 * ToDo項目をリストに追加します。
+	 * @param item 追加するTodoItemオブジェクト
+	 */
 	public void addItem(TodoItem item) {
 		todoItems.add(item);
 	}
 
-	// リスト全体を番号付きで表示する
+	/**
+	 * 現在のToDoリスト全体をコンソールに番号付きで表示します。
+	 */
 	public void displayList() {
 
 
@@ -44,7 +54,10 @@ public class TodoListManager {
 		}
 	}
 
-	//ユーザーが指定した番号（インデックス）の ToDo項目を「完了」にする
+	/**
+	 * ユーザーが指定した番号（インデックス）のToDo項目を「完了」状態にします。
+	 * @param index 完了にしたい項目の番号（1始まり）
+	 */
 	public void completeItem(int index) {
 
 		//受け取った index がリストの有効な範囲内にあるかチェック
@@ -66,7 +79,11 @@ public class TodoListManager {
 		}
 	}
 
-	//リストの内容を編集する
+	/**
+	 * ユーザーが指定した番号のToDo項目の内容を編集します。
+	 * @param index 編集したい項目の番号（1始まり）
+	 * @param newContent 新しい内容
+	 */
 	public void editContent(int index, String newContent) {
 		//受け取った index がリストの有効な範囲内にあるかチェック
 		if(
@@ -87,7 +104,11 @@ public class TodoListManager {
 		}
 	}
 
-	//リストの期限を編集する
+	/**
+	 * ユーザーが指定した番号のToDo項目の期限を編集します。
+	 * @param index 編集したい項目の番号（1始まり）
+	 * @param newDeadline 新しい期限 (LocalDate形式)
+	 */
 	public void editDeadline(int index, LocalDate newDeadline) {
 		//受け取った index がリストの有効な範囲内にあるかチェック
 		if(
@@ -108,7 +129,10 @@ public class TodoListManager {
 		}
 	}
 
-	//現在管理しているToDoリスト全体を取得し、外部に提供する。
+	/**
+	 * 現在管理しているToDoリスト全体を取得し、外部に提供します。
+	 * @return TodoItemオブジェクトのリスト
+	 */
 	public List<TodoItem> getTodoItems() {
 		return todoItems;
 	}
