@@ -136,4 +136,15 @@ public class TodoListManager {
 	public List<TodoItem> getTodoItems() {
 		return todoItems;
 	}
+
+
+	/**
+	 * TodoItemのsetter
+	 * @param todoItems 読み込んだリスト
+	 */
+	public void setTodoItems(List<TodoItem> todoItems) {
+		this.todoItems = todoItems;
+	}
+
+
 }
