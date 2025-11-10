@@ -56,47 +56,49 @@ public class FileHandler {
 
 			while((line = br.readLine()) != null) {
 
-				// 空行や不正な行はスキップ
-                if (line.trim().isEmpty()) {
+				try {
+					// 空行や不正な行はスキップ
+	                if (line.trim().isEmpty()) {
+	                    continue;
+	                }
+
+					//読み込んだ line を、区切り文字である カンマ (,) で分割します。
+					String[] parts = line.split(",");
+
+					// データが3つ（内容,期限,完了状態）揃っているか確認
+	                if (parts.length < 3) {
+	                    System.err.println("警告: 不正なデータ形式の行をスキップしました: " + line);
+	                    continue;
+	                }
+
+					//3つに分割したものを変数に格納します。
+	                String contentString = parts[0];
+	                String deadlineString = parts[1];
+	                String completedString = parts[2];
+
+	                //String型からそれぞれ型変換
+	                LocalDate deadlineLocalDate = LocalDate.parse(deadlineString);
+	                boolean completedBoolean = Boolean.parseBoolean(completedString);
+
+	                //変換したデータでTodoItemを生成
+	                TodoItem item = new TodoItem(contentString,deadlineLocalDate);
+
+	                //完了状態をリセット
+	                item.setCompleted(completedBoolean);
+
+	                //リストに追加
+	                loadedList.add(item);
+
+				}catch(java.time.format.DateTimeParseException | IllegalArgumentException e) {
+                    // 日付形式やBoolean形式が不正な場合のエラーをキャッチ
+                    System.err.println("警告: パースエラーのため行をスキップしました: " + line + " (原因: " + e.getMessage() + ")");
                     continue;
                 }
-
-				//読み込んだ line を、区切り文字である カンマ (,) で分割します。
-				String[] parts = line.split(",");
-
-				// データが3つ（内容,期限,完了状態）揃っているか確認
-                if (parts.length < 3) {
-                    System.err.println("警告: 不正なデータ形式の行をスキップしました: " + line);
-                    continue;
-                }
-
-				//3つに分割したものを変数に格納します。
-                String contentString = parts[0];
-                String deadlineString = parts[1];
-                String completedString = parts[2];
-
-                //String型からそれぞれ型変換
-                LocalDate deadlineLocalDate = LocalDate.parse(deadlineString);
-                boolean completedBoolean = Boolean.parseBoolean(completedString);
-
-                //変換したデータでTodoItemを生成
-                TodoItem item = new TodoItem(contentString,deadlineLocalDate);
-
-                //完了状態をリセット
-                item.setCompleted(completedBoolean);
-
-                //リストに追加
-                loadedList.add(item);
-
 			}
 		}catch(IOException e){
 			// ファイルがない場合やI/Oエラー時の処理（空のリストを返すのが目的）
             System.out.println("警告: ToDoリストファイルが見つからないか、読み込みに失敗しました。新規リストを開始します。");
-		}catch(Exception e) {
-			// パースエラー（LocalDate.parseの失敗など）をキャッチするため、広めのExceptionも検討
-            System.err.println("致命的なエラー: データの解析に失敗しました。");
 		}
-
 		return loadedList;
 
 	}

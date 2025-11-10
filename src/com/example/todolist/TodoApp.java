@@ -94,9 +94,10 @@ public class TodoApp {
 						editTask();
 						break;
 
-
 					//一覧の場合
 					case "3":
+						todoListManager.displayList();
+						break;
 
 					//完了の場合completeTaskメソッドを実行
 					case "4":
@@ -107,16 +108,21 @@ public class TodoApp {
 						// 終了処理: データを保存し、ループを抜ける
                         fileHandler.saveList(todoListManager.getTodoItems());
                         System.out.println("データを保存しました。Todoリストアプリを終了します。");
+						return;
+
+					default:
+						// 1, 2, 3, 4, 0 以外のコマンドが入力された場合
+						System.out.println("エラー: 無効な操作番号です。1, 2, 3, 4, 0 のいずれかを入力してください。");
 						break;
 				}
 
 			}catch(InputFormatException e){
-				//入力エラーの捕捉と表示
+				//アプリケーション固有の入力形式エラーの捕捉と表示
 				System.out.println("エラー (入力形式): " + e.getMessage());
+			}catch(Exception e) {
+				// 数値や日付のパースエラー、配列外参照など、予期せぬエラー
+				System.out.println("致命的なエラーが発生しました: " + e.getMessage());
 			}
-
-			scanner.close();
-
 		}
 	}
 
@@ -130,9 +136,10 @@ public class TodoApp {
 	 * タスクの新規追加
 	 * ユーザーに"[入力例]　部屋の掃除 2025-11-07"の形で入力させ、タスクを新規追加します。
 	 */
-    private void addTask() throws Exception{
+    private void addTask() throws InputFormatException{
 		System.out.println("タスクと期限を入力してください");
 		System.out.println("[入力例]　部屋の掃除 2025-11-07");
+		System.out.print("> ");
 		String inputTask = scanner.nextLine();
 
 		//タスクが空の場合
@@ -145,14 +152,26 @@ public class TodoApp {
 		String[] parts = inputTask.split(" ",2);
         if (parts.length < 2) {
             // 例外をスローして、runLoopのcatchで処理させる
-            throw new Exception("日付の入力が不足しています。 [内容 日付(YYYY-MM-DD)] の形式で入力してください。");
+            throw new InputFormatException("日付の入力が不足しています。 [内容 日付(YYYY-MM-DD)] の形式で入力してください。");
         }
 
 		String content			= parts[0];
 		String deadlineString	= parts[1];
 
+
         // 2. 型変換 (LocalDate.parseが失敗するとExceptionをスローする)
-        LocalDate deadline = LocalDate.parse(deadlineString);
+		LocalDate deadline;
+	    try {
+	        // 2. 型変換（パースエラーが発生する可能性のある箇所）
+	        deadline = LocalDate.parse(deadlineString);
+
+	    } catch (java.time.format.DateTimeParseException e) {
+	        // パースエラーが発生した場合、それを InputFormatException でラップする
+	        throw new InputFormatException(
+	            "日付の形式が不正です。YYYY-MM-DD (例: 2025-11-07) 形式で入力してください。",
+	            e
+	        );
+	    }
 
         // 3. TodoItemの生成と追加
         TodoItem newItem = new TodoItem(content, deadline);
@@ -162,9 +181,9 @@ public class TodoApp {
 
 	/**
 	 * タスクの編集
-	 *
+	 * ユーザーに編集したい項目をコマンドで選択させ、内容or期限を編集させる
 	 */
-    private void editTask() throws Exception{
+    private void editTask() throws InputFormatException{
 		System.out.println("編集したい項目の番号を入力してください。");
 		System.out.println("1:内容　2:期限");
 		System.out.print("> ");
@@ -178,13 +197,14 @@ public class TodoApp {
 			case "1":
 				System.out.println("編集したい項目の番号と内容を入力してください");
 				System.out.println("[入力例]　7 javaの勉強");
+				System.out.print("> ");
 				String inputEditContent = scanner.nextLine();
 
 				//1-1,コマンドラインの引数を2つに分割（スペース区切り）
 				String[] editContentParts = inputEditContent.split(" ",2);
 		        if (editContentParts.length < 2) {
 		            // 例外をスローして、runLoopのcatchで処理させる
-		            throw new Exception("入力が不正です。 [項目番号 内容] の形式で入力してください。");
+		            throw new InputFormatException("入力が不正です。 [項目番号 内容] の形式で入力してください。");
 		        }
 
 				indexString	= editContentParts[0];
@@ -196,18 +216,19 @@ public class TodoApp {
 				//1-3.項目番号と内容をTodoListManagerに渡す
 				todoListManager.editContent(index, content);
 
-				return;
+				break;
 
 			case "2":
 				System.out.println("編集したい項目の番号と期限を入力してください");
-				System.out.println("[入力例]　7 javaの勉強");
+				System.out.println("[入力例]　7 2026-01-01");
+				System.out.print("> ");
 				String inputEditDeadline = scanner.nextLine();
 
 				//2-1,コマンドラインの引数を2つに分割（スペース区切り）
 				String[] editDeadlineParts = inputEditDeadline.split(" ",2);
 		        if (editDeadlineParts.length < 2) {
 		            // 例外をスローして、runLoopのcatchで処理させる
-		            throw new Exception("入力が不正です。 [項目番号 内容] の形式で入力してください。");
+		            throw new InputFormatException("入力が不正です。 [項目番号 内容] の形式で入力してください。");
 		        }
 
 				indexString	  = editDeadlineParts[0];
@@ -220,12 +241,16 @@ public class TodoApp {
 				//2-3.項目番号と内容をTodoListManagerに渡す
 				todoListManager.editDeadline(index, deadline);
 
-				return;
+				break;
 		}
     }
 
-    private void completeTask() throws Exception{
-    	System.out.println("完了にしたい項目の番号を入力してください")
+	/**
+	 * 項目の完了
+	 * TodoListManagerのcompleteItemメソッドを呼び出し完了状態にする
+	 */
+    private void completeTask() throws InputFormatException{
+    	System.out.println("完了にしたい項目の番号を入力してください");
     	System.out.print("> ");
     	String inputIndex = scanner.nextLine().trim();
 
@@ -234,8 +259,6 @@ public class TodoApp {
 
 		//項目番号をTodoListManagerに渡す
 		todoListManager.completeItem(index);
-
-		return;
     }
 
 

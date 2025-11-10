@@ -66,8 +66,7 @@ public class TodoListManager {
 			index > todoItems.size()
 		){
 			//無効な場合メソッドを終了
-			System.out.println("エラー: 指定された番号は無効です。");
-	        return;
+			throw new IndexOutOfBoundsException("項目番号 " + index + " は存在しません。");
 		}else {
 
 			//index を使ってリストから TodoItem オブジェクトを取得
@@ -91,8 +90,7 @@ public class TodoListManager {
 			index > todoItems.size()
 		){
 			//無効な場合メソッドを終了
-			System.out.println("エラー: 指定された番号は無効です。");
-	        return;
+			throw new IndexOutOfBoundsException("項目番号 " + index + " は存在しません。");
 		}else {
 
 			//index を使ってリストから TodoItem オブジェクトを取得
@@ -116,8 +114,7 @@ public class TodoListManager {
 			index > todoItems.size()
 		){
 			//無効な場合メソッドを終了
-			System.out.println("エラー: 指定された番号は無効です。");
-	        return;
+			throw new IndexOutOfBoundsException("項目番号 " + index + " は存在しません。");
 		}else {
 
 			//index を使ってリストから TodoItem オブジェクトを取得
